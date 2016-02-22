@@ -1,7 +1,13 @@
 (ns irresponsible.unscrew
-  (:require [irresponsible.unscrew.util :refer [stringify-map]])
-  (:import  [java.lang Exception]
-            [java.util.jar JarFile JarEntry]))
+  (:require [byte-streams :refer [to-byte-buffer]])
+  (:import [java.util.jar JarFile JarEntry]))
+
+(defn- mapassoc-kv-with [kf vf init coll]
+  (reduce-kv (fn [acc k v]
+               (assoc acc (kf k) (vf v))) init coll))
+
+(defn- stringify-map [m]
+  (mapassoc-kv-with str str {} m))
 
 (defn open-jar
   "Opens jar file at given path
@@ -24,26 +30,49 @@
       (when-let [es (.entrySet as)]
         (stringify-map (into {} es))))))
 
-(defn get-entries
-  "Returns a set of filenames in the jar
+(defn- get-name [je]
+  (.getName je))
+
+(defn transform-entries
+  "Returns a sorted-set of filepaths in the jar by applying a transducer to the
+   sequence of entries
+   args: [jar xf]
+   returns: set of string"
+  [^JarFile jar xf]
+  (->> jar .entries enumeration-seq
+       (into (sorted-set) xf)))
+;       (into (sorted-set-by #(clojure.core/compare (get-name %) (get-name %2)) xf))))
+             
+(defn entries
+  "Returns a sorted-set of filepaths in the jar
    args: [jar]
    returns: set of string"
-  [^JarFile jar]
-  (->> jar .entries enumeration-seq
-       (into #{} (map #(.getName %)))))
+  [jar]
+  (transform-entries jar (map get-name)))
+
+(defn entries-matching
+  "Returns a sorted-set of filepaths in the jar for which (pred %) returns truthy
+   args: [jar pred]
+   returns: set of string"
+  [jar pred]
+  (transform-entries jar (comp (map get-name) (filter pred) )))
+
+(defn files
+  [jar]
+  (entries-matching jar #(not (re-find #"/$" %))))
 
 (defn slurp-file
   "Given a filename in the jar, slurps it
    args: [jar name & [binary?]]
-   returns: if binary?, bytebuffer, else string decoded from utf-8"
-  [^JarFile jar ^String name & [binary?]]
+   returns: if binary?, ByteBuffer, else string utf-8 decoded"
+  [^JarFile jar ^String name & binary?]
   (when-let [^JarEntry je (.getJarEntry jar name)]
     (let [s (.getInputStream jar je)
           size (.getSize je)
           bytes (byte-array size)]
       (.read s bytes 0 size)
       (if binary?
-        bytes
+        (to-byte-buffer bytes)
         (String. bytes (java.nio.charset.Charset/forName "UTF-8"))))))
 
 (defmacro with-jar
@@ -54,10 +83,10 @@
      exprs: expressions to run with name bound to the jar
    returns: result of last expr"
   [name path & exprs]
-  `(let [~name (open-jar path)
-         r (do ~@exprs)]
+  `(let [~name (open-jar ~path)
+         ~'r (do ~@exprs)]
      (close-jar ~name)
-     r))
+     ~'r))
 
 (defn slurp-jar-matching
   "Opens a jar at the given path, filters filenames by predicate and reads them,
@@ -68,6 +97,6 @@
    returns map of filename to content"
   [jar-path predicate binary?]
   (with-jar jar jar-path
-    (let [fs (into [] (filter predicate) (get-entries j))]
-      (into {} (map (fn [f] [f (slurp-file j f)])) fs))))
+    (let [fs (into [] (filter predicate) (entries jar))]
+      (into {} (map (fn [f] [f (slurp-file jar f)])) fs))))
 
