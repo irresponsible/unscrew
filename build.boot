@@ -1,3 +1,4 @@
+
 (set-env!
   :project 'irresponsible/unscrew
   :version "0.1.0"
@@ -8,7 +9,6 @@
   :scm {:url "https://github.com/irresponsible/unscrew.git"}
   :developers {"James Laver" "james@seriesofpipes.com"}
   :license {"MIT" "https://en.wikipedia.org/MIT_License"}
-  :repositories [["clojars" {:url "https://clojars.org/repo/"}]]
   :dependencies '[[org.clojure/clojure "1.8.0" :scope "provided"]
                   [byte-streams "0.2.1-alpha1"]
                   [me.raynes/fs     "1.4.6"    :scope "test"]
@@ -32,7 +32,7 @@
         :ensure-release true
         :ensure-clean   true
         :gpg-sign       true
-        :repositories (get-env :repositories)}
+        :repositories [["clojars" {:url "https://clojars.org/repo/"}]]}
   target  {:dir #{"target"}})
 
 (deftask tests []
