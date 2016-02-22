@@ -17,13 +17,15 @@
   (JarFile. path))
 
 (defn close-jar
-  "Closes the given jar file
+  "Closes the given JarFile
    args: [jar]"
   [^JarFile jar]
   (.close jar))
 
 (defn get-manifest
-  "Returns the manifest for the jar"
+  "Returns the manifest for the jar as a map
+   args: [jar]
+   returns: map of string to string"
   [^JarFile jar]
   (when-let [m (.getManifest jar)]
     (when-let [as (.getMainAttributes m)]
@@ -41,7 +43,6 @@
   [^JarFile jar xf]
   (->> jar .entries enumeration-seq
        (into (sorted-set) xf)))
-;       (into (sorted-set-by #(clojure.core/compare (get-name %) (get-name %2)) xf))))
              
 (defn entries
   "Returns a sorted-set of filepaths in the jar
@@ -58,6 +59,9 @@
   (transform-entries jar (comp (map get-name) (filter pred) )))
 
 (defn files
+  "Returns a sorted-set of files in the jar (that is: not directories)
+   args: [jar]
+   returns: sorted-set of string filepath (jar relative)"
   [jar]
   (entries-matching jar #(not (re-find #"/$" %))))
 
@@ -99,4 +103,3 @@
   (with-jar jar jar-path
     (let [fs (into [] (filter predicate) (entries jar))]
       (into {} (map (fn [f] [f (slurp-file jar f)])) fs))))
-

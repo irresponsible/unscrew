@@ -25,7 +25,8 @@
         :ensure-branch  "master"
         :ensure-release true
         :ensure-clean   true
-        :gpg-sign       true}
+        :gpg-sign       true
+        :repositories [["clojars" {:url "https://clojars.org/repo/"}]]}
   target  {:dir #{"target"}})
 
 (deftask tests []
