@@ -87,10 +87,11 @@
      exprs: expressions to run with name bound to the jar
    returns: result of last expr"
   [name path & exprs]
-  `(let [~name (open-jar ~path)
-         ~'r (do ~@exprs)]
-     (close-jar ~name)
-     ~'r))
+  `(let [~name (open-jar ~path)]
+     (try
+       ~@exprs
+       (finally
+         (close-jar ~name)))))
 
 (defn slurp-jar-matching
   "Opens a jar at the given path, filters filenames by predicate and reads them,
