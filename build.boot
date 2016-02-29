@@ -1,7 +1,7 @@
 
 (set-env!
   :project 'irresponsible/unscrew
-  :version "0.1.0"
+  :version "0.1.1"
   :resource-paths #{"src" "resources"}
   :source-paths #{"src"}
   :description "A toolkit for processing jar files"
