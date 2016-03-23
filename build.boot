@@ -34,9 +34,12 @@
         :repo-map [["clojars" {:url "https://clojars.org/repo/"}]]}
   target  {:dir #{"target"}})
 
-(deftask test []
-  (set-env! :source-paths #(conj % "test"))
-  ;; the tests rely on having the jar kicking about!
+(deftask testing []
+  (set-env! :resource-paths #(conj % "test"))
+  (set-env! :source-paths #(conj % "test")))
+  
+(deftask test [] ;; the tests rely on having the jar kicking about!
+  (testing)
   (comp (target) (speak) (boot-test/test)))
 
 (deftask autotest []
@@ -45,3 +48,6 @@
 (deftask make-jar []
   (comp (target) (pom) (jar)))
 
+(deftask travis []
+  (testing)
+  (boot-test/test))
