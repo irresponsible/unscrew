@@ -6,6 +6,8 @@ A really simple clojure library for processing jar files
 
 ## Usage
 
+[![Clojars Project](http://clojars.org/irresponsible/unscrew/latest-version.svg)](http://clojars.org/irresponsible/unscrew)
+
 ```clj
 (require '[irresponsible.unscrew :as u])
 
