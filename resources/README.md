@@ -1,3 +1,5 @@
+The irresponsible clojure guild present...
+
 # unscrew
 
 A really simple clojure library for processing jar files

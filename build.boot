@@ -1,7 +1,6 @@
-
 (set-env!
   :project 'irresponsible/unscrew
-  :version "0.1.1"
+  :version "0.1.2"
   :resource-paths #{"src" "resources"}
   :source-paths #{"src"}
   :description "A toolkit for processing jar files"
@@ -17,7 +16,7 @@
 
 ;; https://github.com/boot-clj/boot/blob/master/doc/boot.task.built-in.md
 
-(require '[adzerk.boot-test :as t])
+(require '[adzerk.boot-test :as boot-test])
 
 (task-options!
   pom {:url         (get-env :url)
@@ -32,24 +31,17 @@
         :ensure-release true
         :ensure-clean   true
         :gpg-sign       true
-        :repositories [["clojars" {:url "https://clojars.org/repo/"}]]}
+        :repo-map [["clojars" {:url "https://clojars.org/repo/"}]]}
   target  {:dir #{"target"}})
 
-(deftask tests []
+(deftask test []
   (set-env! :source-paths #(conj % "test"))
   ;; the tests rely on having the jar kicking about!
-  (comp (target) (speak) (t/test)))
+  (comp (target) (speak) (boot-test/test)))
 
 (deftask autotest []
-  (comp (watch) (tests)))
+  (comp (watch) (test)))
 
 (deftask make-jar []
   (comp (target) (pom) (jar)))
-
-
-
-
-
-
-
 
