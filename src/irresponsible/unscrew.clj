@@ -1,5 +1,7 @@
 (ns irresponsible.unscrew
-  (:require [byte-streams :refer [to-byte-buffer]])
+  (:require [byte-streams :refer [to-byte-buffer]]
+            [clojure.main :refer [demunge]]
+            [clojure.string :as s])
   (:import [java.util.jar JarFile JarEntry]))
 
 (defn- mapassoc-kv-with [kf vf init coll]
@@ -44,26 +46,30 @@
   (->> jar .entries enumeration-seq
        (into (sorted-set) xf)))
              
-(defn entries
+(defn paths
   "Returns a sorted-set of filepaths in the jar
    args: [jar]
    returns: set of string"
   [jar]
   (transform-entries jar (map get-name)))
 
-(defn entries-matching
+(def entries paths) ;; compat
+
+(defn paths-matching
   "Returns a sorted-set of filepaths in the jar for which (pred %) returns truthy
    args: [jar pred]
    returns: set of string"
   [jar pred]
   (transform-entries jar (comp (map get-name) (filter pred) )))
 
+(def entries-matching paths-matching) ;; compat
+
 (defn files
   "Returns a sorted-set of files in the jar (that is: not directories)
    args: [jar]
    returns: sorted-set of string filepath (jar relative)"
   [jar]
-  (entries-matching jar #(not (re-find #"/$" %))))
+  (paths-matching jar #(not (re-find #"/$" %))))
 
 (defn slurp-file
   "Given a filename in the jar, slurps it
@@ -104,3 +110,36 @@
   (with-jar jar jar-path
     (let [fs (into [] (filter predicate) (entries jar))]
       (into {} (map (fn [f] [f (slurp-file jar f)])) fs))))
+
+(defn normalise-class
+  "Given the jar-relative path of a class, turns it into a java classname
+   args: [path]
+   returns: string"
+  [path]
+  (-> path
+       (s/replace #"\.class$" "")
+       (s/replace #"/" ".")))
+
+(defn normalise-namespace
+  "Given the jar-relative path of a clojure file, turns it into a namespace name
+   args: [path]
+   returns: string"
+  [path]
+  (-> path
+       (s/replace #"\.clj[cs]?$" "")
+       (s/replace #"/" ".")
+       demunge))
+
+(defn clojure-in-jar
+  "Returns a sequence of file paths in the jar that look like clojure(script) files
+   args: [jar]
+   returns: seq of string"
+  [jar]
+  (paths-matching jar (partial re-find #"\.clj[sc]?$")))
+  
+(defn classes-in-jar
+  "Returns a sequence of file paths in the jar that look like java classes
+   args: [jar]
+   returns: seq of string"
+  [jar]
+  (paths-matching jar (partial re-find #"\.class$")))
