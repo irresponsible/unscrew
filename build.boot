@@ -40,7 +40,7 @@
   
 (deftask test [] ;; the tests rely on having the jar kicking about!
   (testing)
-  (comp (target) (speak) (boot-test/test)))
+  (comp (target) (boot-test/test)))
 
 (deftask autotest []
   (comp (watch) (test)))
