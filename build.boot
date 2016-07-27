@@ -51,3 +51,6 @@
 (deftask travis []
   (testing)
   (boot-test/test))
+
+(deftask installdeps []
+  identity)
