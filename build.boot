@@ -54,3 +54,8 @@
 
 (deftask installdeps []
   identity)
+
+(deftask release []
+  (comp (make-jar)
+        (push)
+  ))
