@@ -40,13 +40,13 @@
   
 (deftask test [] ;; the tests rely on having the jar kicking about!
   (testing)
-  (comp (target) (boot-test/test)))
+  (comp (boot-test/test)))
 
 (deftask autotest []
   (comp (watch) (test)))
 
 (deftask make-jar []
-  (comp (target) (pom) (jar)))
+  (comp (pom) (jar)))
 
 (deftask travis []
   (testing)
