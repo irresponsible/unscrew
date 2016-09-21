@@ -4,6 +4,7 @@ script: ./boot travis
 branches:
   only:
     - master
+    - releng
 jdk:
   - oraclejdk8
   - openjdk7
