@@ -1,0 +1,201 @@
+# unscrew
+
+## A really simple clojure library for processing JAR files
+
+`unscrew` contains a collection of straight forward utilities for doing
+basic IO operations with standard Java JAR files, and
+extracting/interpreting their contents.
+
+## Cheatsheet
+
+```clojure
+(classes-in-jar (open-jar "path/to/jar"))
+(clojure-in-jar (open-jar "path/to/jar"))
+(close-jar (open-jar "path/to/jar"))
+(files (open-jar "path/to/jar"))
+(key "foo" (get-manifest (open-jar "path/to/jar")))
+(normalise-class "path/to/foo.class")
+(normalise-namespace "path/to/foo.clj")
+(open-jar "path/to/jar")
+(paths (open-jar "path/to/jar"))
+(paths-matching (open-jar "path/to/jar") #(re-find #"\.clj$" %))
+(slurp-file (open-jar "path/to/jar") "file/name" false)
+(slurp-jar-matching "path/to/jar" #(re-find #".clj$") false)
+(transform-entries (open-jar "path/to/jar") (map get-name))
+(with-jar jar "path/to/jar" (println (slurp-file jar "file/name") false))
+```
+
+## Basic Anatomy of a Jar File
+A Jar file is mostly just a glorified Zip file decorated with a `MANIFEST`
+( which is itself, a file in the Zip, stored in `META-INF/MANIFEST.MF` )
+
+This manifest is just a dumb key-value store that can hold arbitrary
+strings, some of which may be used for various java purposes.
+
+## Basic Examples
+
+### Reading a Jar file and retrieving a manifest entry
+
+This example defines a function that will retrieve the manifest
+entry for the key "foo" in the given Jar file.
+
+```clojure
+
+(require '[irresponsible.unscrew :as u])
+
+(defn manifest-foo [jar]
+   (key 'foo'
+     (u/get-manifest
+       (u/open-jar jar))))
+
+```
+
+### Reading a Jar file and fetching a binary map of wanted files
+
+This example will create a function that will retrieve a map of
+all clojure or clojurescript source files from the given Jar file as a
+`{name content}` map.
+
+```clojure
+(require '[irresponsible.unscrew :as u])
+
+(defn jar-source-files [jar]
+     (u/slurp-jar-matching
+       jar
+       (partial re-find #"\.cl(:?j|js|ljs)$")
+       false))
+
+```
+
+## Functions
+
+### open-jar
+**Low Level**: Opens a Jar file specified by `path` and returns an
+instance of `java.util.jar.JarFile`
+
+Generally you want [with-jar](#with-jar)
+
+```clojure
+(open-jar path)
+```
+
+### close-jar
+**Low Level**: Closes a `java.util.jar.JarFile`
+
+Generally you want [with-jar](#with-jar)
+
+```clojure
+(let [jar (open-jar "path/to/jar")]
+     ...
+     (close-jar jar))
+```
+
+### get-manifest
+Returns the contents of the given Jar files MANIFEST as a `{string string}`
+map.
+
+```clojure
+(println (with-jar myjar "path/to/myjar.jar"
+ (key "Manifest-Version" (get-manifest myjar))
+))
+```
+
+### transform-entries
+Returns a sorted set of file paths that exist in the jar by applying a
+transducer to the sequence of `java.util.jar.JarEntry`'s.
+
+```clojure
+(defn get-name [^JarEntry e]
+   (.getName e)
+)
+(map println (with-jar myjar "path/to/jar"
+      (transform-entries myjar (map get-name))
+))
+```
+
+### paths
+Returns a sorted set of all the names of all the file paths present in the
+Jar.
+
+```clojure
+(map println (with-jar myjar "path/to/jar"
+      (paths myjar)
+))
+```
+
+### paths-matching
+Returns the sorted subset of file paths present in the Jar that satisfy a
+predicate.
+
+```clojure
+(defn jar-jpegs [jar]
+      (paths-matching jar #(re-find #"\.jpg")))
+
+(with myjar "path/to/jar" (map println (jar-jpegs myjar)))
+```
+
+### files
+Returns the sorted subset of file paths which are files ( as opposed to
+either files or directories like 'paths' )
+
+```clojure
+(with myjar "path/to/jar" (map println (files myjar)))
+```
+
+### slurp-file
+Read the entire contents of a given file within a Jar file into memory,
+either as a utf-8 decoded string or as a ByteBuffer
+
+```clojure
+(defn get-fooclj [jar byteBuffer?]
+   (slurp-file jar "foo.clj" byteBuffer?))
+```
+
+### with-jar
+Opens a given jar and locally bind it for operating on, returning
+the result of the last expression.
+
+```clojure
+(println (with-jar jar "path/to/jar"
+           (get-fooclj jar false)))        ; See slurp-file example
+```
+### slurp-jar-matching
+A quick convenince function that opens the specified Jar path, and returns
+a map of `{filename filecontents}` for all file names in the Jar that match
+a predicate.
+
+```clojure
+;(slurp-jar-matching path predicatefunction binary?)
+(map (fn [[filename contents]]
+         (println (str "===[" filename "]==="))
+         (println contents))
+     (slurp-jar-matching "path/to/jar" #(re-find #".clj$") false))
+```
+
+### normalise-class
+Convert a relative string path name into an equivalent java classname
+
+```clojure
+(= (normalise-class "path/to/foo.class") "path.to.foo")
+```
+### normalise-namespace
+Convert a string path to a clojure file into a respective namespace name
+
+```clojure
+(= (normalise-namespace "path/to/foo.clj") "path.to.foo")
+```
+### clojure-in-jar
+Return a sequence of paths in the Jar file which have clojure(script)
+extensions.
+
+```clojure
+(map println (with-jar myjar "path/to/jar"
+                 (clojure-in-jar myjar)))
+```
+### classes-in-jar
+Return a sequence of paths in the Jar file which have .class extensions.
+
+```clojure
+(map println (with-jar myjar "path/to/jar"
+                 (classes-in-jar myjar)))
+```
