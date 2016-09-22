@@ -25,4 +25,5 @@ matrix:
 install:
   - eval '[[ -f boot ]] || curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/${BOOT_SH_VERSION}/boot.sh'
   - chmod 755 boot
+  - export BOOT_JVM_OPTIONS="-Xmx2g -client -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Xverify:none -XX:+CMSClassUnloadingEnabled"
   - ./boot travis-installdeps
