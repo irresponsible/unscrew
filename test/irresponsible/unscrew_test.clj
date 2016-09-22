@@ -34,5 +34,6 @@
 (deftest slurp-jar-matching
   (let [mymap (u/slurp-jar-matching "test/project.jar" #(re-find #".clj$" %) false)]
     (is (= "irresponsible/unscrew.clj" (first (keys mymap))))))
-(deftest normalise-class)
+(deftest normalise-class
+  (is (= "path.to.foo" (u/normalise-class "path/to/foo.class"))))
 (deftest normalise-namespace)
