@@ -107,11 +107,11 @@
 ;;
 ;; ```clojure
 ;; (println (with-jar myjar "path/to/myjar.jar"
-;;  (key "Manifest-Version" (get-manifest myjar))
+;;  (get (get-manifest myjar) "Manifest-Version")
 ;; ))
 ;; ```
 ;;
-;;; (key "foo" (get-manifest (open-jar "path/to/jar")))
+;;; (get (get-manifest (open-jar "path/to/jar")) "manifestkey")
 (defn get-manifest
   "Returns the manifest for the jar as a map
    args: [jar]

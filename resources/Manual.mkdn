@@ -13,7 +13,7 @@ extracting/interpreting their contents.
 (clojure-in-jar (open-jar "path/to/jar"))
 (close-jar (open-jar "path/to/jar"))
 (files (open-jar "path/to/jar"))
-(key "foo" (get-manifest (open-jar "path/to/jar")))
+(get (get-manifest (open-jar "path/to/jar")) "manifestkey")
 (normalise-class "path/to/foo.class")
 (normalise-namespace "path/to/foo.clj")
 (open-jar "path/to/jar")
@@ -96,7 +96,7 @@ map.
 
 ```clojure
 (println (with-jar myjar "path/to/myjar.jar"
- (key "Manifest-Version" (get-manifest myjar))
+ (get (get-manifest myjar) "Manifest-Version")
 ))
 ```
 
