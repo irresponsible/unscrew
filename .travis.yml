@@ -25,3 +25,4 @@ matrix:
 install:
   - eval '[[ -f boot ]] || curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/${BOOT_SH_VERSION}/boot.sh'
   - chmod 755 boot
+  - ./boot travis-installdeps

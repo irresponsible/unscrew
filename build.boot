@@ -48,10 +48,6 @@
 (deftask make-jar []
   (comp (pom) (jar)))
 
-(deftask travis []
-  (testing)
-  (boot-test/test))
-
 (deftask installdeps []
   identity)
 
@@ -59,3 +55,11 @@
   (comp (make-jar)
         (push)
   ))
+
+;; Travis Only stuff
+(deftask travis []
+  (testing)
+  (boot-test/test))
+
+(deftask travis-installdeps []
+  (testing) identity)
