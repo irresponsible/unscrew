@@ -36,4 +36,5 @@
     (is (= "irresponsible/unscrew.clj" (first (keys mymap))))))
 (deftest normalise-class
   (is (= "path.to.foo" (u/normalise-class "path/to/foo.class"))))
-(deftest normalise-namespace)
+(deftest normalise-namespace
+  (is (= "path.to.foo" (u/normalise-namespace "path/to/foo.clj"))))
