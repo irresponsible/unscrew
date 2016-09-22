@@ -12,6 +12,7 @@
            (is (instance? JarFile jar))
            (is (map? (u/get-manifest jar)))
            (is (= "1.0" (get (u/get-manifest jar) "Manifest-Version")))
+           (is (= "META-INF/" (first (u/transform-entries jar (map #(.getName %))))))
            (is (= #{"META-INF/" "META-INF/MANIFEST.MF" "irresponsible/"
                     "irresponsible/unscrew.clj" "README.md"}
                   (u/paths jar)
