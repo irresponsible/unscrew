@@ -31,6 +31,8 @@
              (is (= s1 (bs/to-string s2)))
              (is (not= -1 (.indexOf ^String s1 "Manifest-Version")))
              ::finished)))))
-
+(deftest slurp-jar-matching
+  (let [mymap (u/slurp-jar-matching "test/project.jar" #(re-find #".clj$" %) false)]
+    (is (= "irresponsible/unscrew.clj" (first (keys mymap))))))
 (deftest normalise-class)
 (deftest normalise-namespace)
