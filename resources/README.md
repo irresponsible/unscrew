@@ -17,6 +17,8 @@ A really simple clojure library for processing jar files
   (u/slurp-jar-matching jar (partial re-find #"\.cl(:?j|js|lj)$") false))
 ```
 
+For a full manual, consult [resources/Manual.mkdn](resources/Manual.mkdn)
+
 ## Clojurescript support
 
 We don't support clojurescript as a host, but you can read clojurescript files
