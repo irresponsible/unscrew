@@ -40,21 +40,20 @@
   
 (deftask test [] ;; the tests rely on having the jar kicking about!
   (testing)
-  (comp (boot-test/test)))
+  (boot-test/test))
 
 (deftask autotest []
   (comp (watch) (test)))
 
-(deftask make-jar []
-  (comp (pom) (jar)))
-
 (deftask installdeps []
   identity)
 
+;; RMG Only stuff
+(deftask make-jar []
+  (comp (pom) (jar) (target)))
+
 (deftask release []
-  (comp (make-jar)
-        (push)
-  ))
+  (comp (pom) (jar) (push)))
 
 ;; Travis Only stuff
 (deftask travis []
