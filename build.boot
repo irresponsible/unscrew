@@ -5,7 +5,7 @@
   :source-paths #{"src"}
   :description "A toolkit for processing jar files"
   :url "https://github.com/irresponsible/unscrew"
-  :scm {:url "https://github.com/irresponsible/unscrew.git"}
+  :scm {:url "https://github.com/irresponsible/unscrew"}
   :developers {"James Laver" "james@seriesofpipes.com"}
   :license {"MIT" "https://en.wikipedia.org/MIT_License"}
   :dependencies '[[org.clojure/clojure "1.8.0" :scope "provided"]
