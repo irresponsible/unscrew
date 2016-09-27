@@ -1,4 +1,5 @@
 v0.2.1
+- use newer "byte-streams"
 
 v0.2.0 2016-09-27 014aecbcab96942f024895efd79b9978423eb3dd
 - entries, entries-matching is now paths, paths-matching, but compat is preserved.
