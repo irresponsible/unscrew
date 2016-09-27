@@ -31,6 +31,7 @@
         :ensure-release true
         :ensure-clean   true
         :gpg-sign       true
+        :repo     "clojars"
         :repo-map [["clojars" {:url "https://clojars.org/repo/"}]]}
   target  {:dir #{"target"}})
 
