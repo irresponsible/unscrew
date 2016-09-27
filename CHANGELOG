@@ -1,0 +1,12 @@
+v0.2.0 2016-09-27
+- entries, entries-matching is now paths, paths-matching, but compat is preserved.
+- New functions: normalise-class, normalise-namespace, clojure-in-jar,
+  classes-in-jar
+- Now a fully documented manual included in shipped jar, also available
+  at resources/Manual.mkdn
+
+v0.1.1 2016-02-29 73e1bf6801b40753e091b210ca53cf82968656f5
+- with-jar now more robust.
+
+v0.1.0 2016-02-23 bb969ce24d1d129f36af7ee3ab5a758630b58d10
+- Initial Version
