@@ -11,7 +11,7 @@
   :dependencies '[[org.clojure/clojure "1.9.0-alpha15" :scope "provided"]
                   [byte-streams "0.2.2"]
                   [me.raynes/fs     "1.4.6"    :scope "test"]
-                  [boot/core "2.6.0"           :scope "test"]
+                  [boot/core "2.7.1"           :scope "test"]
                   [adzerk/boot-test "1.1.2"    :scope "test"]])
 
 ;; https://github.com/boot-clj/boot/blob/master/doc/boot.task.built-in.md
