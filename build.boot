@@ -8,7 +8,7 @@
   :scm {:url "https://github.com/irresponsible/unscrew"}
   :developers {"James Laver" "james@seriesofpipes.com"}
   :license {"MIT" "https://en.wikipedia.org/MIT_License"}
-  :dependencies '[[org.clojure/clojure "1.8.0" :scope "provided"]
+  :dependencies '[[org.clojure/clojure "1.9.0-alpha15" :scope "provided"]
                   [byte-streams "0.2.2"]
                   [me.raynes/fs     "1.4.6"    :scope "test"]
                   [boot/core "2.6.0"           :scope "test"]
